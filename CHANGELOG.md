@@ -1,3 +1,8 @@
+# 0.2.1
+
+* Added Dartdoc comments to public API.
+* Fixed formatting issues.
+
 # 0.2.0
 
 * Added `cornerRadius` and `boxSize` parameters.

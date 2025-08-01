@@ -2,13 +2,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// A Flutter widget for entering single characters at a time in a series of boxes.
+///
+/// This widget provides a flexible and customizable way to input codes, PINs, or
+/// any sequence of single characters. Each character has its own dedicated box,
+/// and the widget handles focus management, backspace behavior, and character validation.
 class CodeEntryField extends StatefulWidget {
+  /// The number of character boxes to display.
   final int characterCount;
+
+  /// A callback function that is called whenever the list of characters changes.
+  /// It provides the current list of characters in all boxes.
   final void Function(List<String>) onChanged;
+
+  /// The radius for the corners of each character box.
+  /// Defaults to 8.0.
   final double cornerRadius;
+
+  /// The size (width and height) of each character box.
+  /// Defaults to 50.0.
   final double boxSize;
+
+  /// An optional list of initial characters to pre-fill the boxes.
+  /// If the list is longer than `characterCount`, extra characters are ignored.
+  /// If shorter, the remaining boxes will be blank.
   final List<String>? initialCharacters;
 
+  /// Creates a [CodeEntryField] widget.
   const CodeEntryField({
     super.key,
     required this.characterCount,
@@ -28,11 +48,8 @@ class _EmptyTextSelectionControls extends TextSelectionControls {
 
   @override
   Widget buildHandle(
-    BuildContext context,
-    TextSelectionHandleType type,
-    double textLineHeight,
-    [VoidCallback? onTap]
-  ) {
+      BuildContext context, TextSelectionHandleType type, double textLineHeight,
+      [VoidCallback? onTap]) {
     return const SizedBox.shrink();
   }
 
@@ -66,7 +83,9 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
     super.initState();
     _characters = List.generate(widget.characterCount, (index) => '');
     if (widget.initialCharacters != null) {
-      for (int i = 0; i < widget.initialCharacters!.length && i < widget.characterCount; i++) {
+      for (int i = 0;
+          i < widget.initialCharacters!.length && i < widget.characterCount;
+          i++) {
         _characters[i] = widget.initialCharacters![i];
       }
     }
@@ -81,7 +100,8 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
       (index) {
         final focusNode = FocusNode();
 
-        WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged(_characters));
+        WidgetsBinding.instance
+            .addPostFrameCallback((_) => widget.onChanged(_characters));
 
         focusNode.addListener(() {
           if (focusNode.hasFocus) {
