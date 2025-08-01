@@ -2,6 +2,8 @@
 
 A Flutter widget for entering single characters at a time in a series of boxes.
 
+![Example](images/example.png)
+
 ## Features
 
 *   Enter single characters in a series of boxes.
