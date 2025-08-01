@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               cornerRadius: 12.0,
               boxSize: 60.0,
+              initialCharacters: ['1', '2', '3'],
             ),
             const SizedBox(height: 20),
             Text(

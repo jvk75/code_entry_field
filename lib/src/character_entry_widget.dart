@@ -7,6 +7,7 @@ class CodeEntryField extends StatefulWidget {
   final void Function(List<String>) onChanged;
   final double cornerRadius;
   final double boxSize;
+  final List<String>? initialCharacters;
 
   const CodeEntryField({
     super.key,
@@ -14,6 +15,7 @@ class CodeEntryField extends StatefulWidget {
     required this.onChanged,
     this.cornerRadius = 8.0,
     this.boxSize = 50.0,
+    this.initialCharacters,
   });
 
   @override
@@ -62,15 +64,24 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
   @override
   void initState() {
     super.initState();
+    _characters = List.generate(widget.characterCount, (index) => '');
+    if (widget.initialCharacters != null) {
+      for (int i = 0; i < widget.initialCharacters!.length && i < widget.characterCount; i++) {
+        _characters[i] = widget.initialCharacters![i];
+      }
+    }
+
     _controllers = List.generate(
       widget.characterCount,
-      (index) => TextEditingController(),
+      (index) => TextEditingController(text: _characters[index]),
     );
-    _characters = List.generate(widget.characterCount, (index) => '');
+
     _focusNodes = List.generate(
       widget.characterCount,
       (index) {
         final focusNode = FocusNode();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) => widget.onChanged(_characters));
 
         focusNode.addListener(() {
           if (focusNode.hasFocus) {

@@ -30,5 +30,6 @@ CodeEntryField(
   },
   cornerRadius: 12.0, // Optional: default is 8.0
   boxSize: 60.0, // Optional: default is 50.0
+  initialCharacters: ['A', 'B', 'C'], // Optional: default is empty
 )
 ```
