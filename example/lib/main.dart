@@ -45,9 +45,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   _characters = characters.join();
                 });
               },
-              cornerRadius: 12.0,
-              boxSize: 60.0,
+              boxSize: Size(50, 50),
               initialCharacters: ['1', '2', '3'],
+              style: CodeEntryFieldStyle.Default.copyWith(
+                boxBackgroundColor: Colors.grey.withAlpha(50),
+              ),
             ),
             const SizedBox(height: 20),
             Text(

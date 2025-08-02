@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'code_entry_field_style.dart';
 
 /// A Flutter widget for entering single characters at a time in a series of boxes.
 ///
@@ -15,27 +16,26 @@ class CodeEntryField extends StatefulWidget {
   /// It provides the current list of characters in all boxes.
   final void Function(List<String>) onChanged;
 
-  /// The radius for the corners of each character box.
-  /// Defaults to 8.0.
-  final double cornerRadius;
-
   /// The size (width and height) of each character box.
   /// Defaults to 50.0.
-  final double boxSize;
+  final Size? boxSize;
 
   /// An optional list of initial characters to pre-fill the boxes.
   /// If the list is longer than `characterCount`, extra characters are ignored.
   /// If shorter, the remaining boxes will be blank.
   final List<String>? initialCharacters;
 
+  /// The style to apply to the code entry field.
+  final CodeEntryFieldStyle? style;
+
   /// Creates a [CodeEntryField] widget.
   const CodeEntryField({
     super.key,
     required this.characterCount,
     required this.onChanged,
-    this.cornerRadius = 8.0,
-    this.boxSize = 50.0,
+    this.boxSize,
     this.initialCharacters,
+    this.style,
   });
 
   @override
@@ -78,9 +78,14 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
   late List<FocusNode> _focusNodes;
   late List<String> _characters;
 
+  late CodeEntryFieldStyle style;
+
   @override
   void initState() {
     super.initState();
+
+    style = widget.style ?? CodeEntryFieldStyle.Default;
+
     _characters = List.generate(widget.characterCount, (index) => '');
     if (widget.initialCharacters != null) {
       for (int i = 0;
@@ -184,8 +189,8 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(widget.characterCount, (index) {
           return Container(
-            width: widget.boxSize,
-            height: widget.boxSize,
+            width: widget.boxSize?.width ?? 50,
+            height: widget.boxSize?.height ?? 50,
             margin: const EdgeInsets.all(4),
             child: TextField(
               controller: _controllers[index],
@@ -193,12 +198,29 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
               readOnly: true,
               showCursor: true,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24),
+              textAlignVertical: TextAlignVertical.top,
+              enableSuggestions: false,
+              style: widget.style?.textStyle,
               selectionControls: _EmptyTextSelectionControls(),
               decoration: InputDecoration(
-                counterText: '',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(widget.cornerRadius),
+                prefixText: '',
+                filled: true,
+                fillColor: style.boxBackgroundColor,
+                focusColor: style.boxBackgroundColor,
+                hoverColor: style.boxBackgroundColor,
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: style.selectionColor ?? Colors.black,
+                    width: (style.boxBorderWidth ?? 1.0) * 2,
+                  ),
+                  borderRadius: BorderRadius.circular(style.boxCornerRadius ?? 0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: style.boxBorderColor ?? Colors.black,
+                    width: style.boxBorderWidth ?? 1.0,
+                  ),
+                  borderRadius: BorderRadius.circular(style.boxCornerRadius ?? 0),
                 ),
               ),
               onTap: () {

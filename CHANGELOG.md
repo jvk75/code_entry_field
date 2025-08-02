@@ -1,3 +1,7 @@
+# 0.3.0
+
+* Added support for styling
+
 # 0.2.1
 
 * Added Dartdoc comments to public API.
