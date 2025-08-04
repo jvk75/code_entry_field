@@ -1,3 +1,7 @@
+# 0.4.0
+
+* Added capitilisation control
+
 # 0.3.0
 
 * Added support for styling

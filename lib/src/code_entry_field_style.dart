@@ -40,6 +40,7 @@ class CodeEntryFieldStyle {
       selectionColor: Colors.black,
       textStyle: TextStyle(
         fontSize: 20,
+        color: Colors.black,
       ));
 
   /// copyWith method for changing default style values

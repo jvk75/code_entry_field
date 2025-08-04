@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'code_entry_field_style.dart';
 
+/// Capilization of the characters.
+/// allwaysAllcaps - Character is converted to allcaps
+/// alwaysSmall - Character is converted to lowercaps
+/// keyboardDefined - Character is defined by the keyboard (default)
+enum Capitalization {
+  alwaysAllcaps,
+  alwaysSmall,
+  keyboardDefined;
+}
+
 /// A Flutter widget for entering single characters at a time in a series of boxes.
 ///
 /// This widget provides a flexible and customizable way to input codes, PINs, or
@@ -28,6 +38,9 @@ class CodeEntryField extends StatefulWidget {
   /// The style to apply to the code entry field.
   final CodeEntryFieldStyle? style;
 
+  /// Set the character capitaliztion . Default: keyboadDefined
+  final Capitalization capitalization;
+
   /// Creates a [CodeEntryField] widget.
   const CodeEntryField({
     super.key,
@@ -36,6 +49,7 @@ class CodeEntryField extends StatefulWidget {
     this.boxSize,
     this.initialCharacters,
     this.style,
+    this.capitalization = Capitalization.keyboardDefined,
   });
 
   @override
@@ -143,7 +157,17 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
             return KeyEventResult.handled;
           }
 
-          final char = event.character;
+          String? char = event.character;
+          switch (widget.capitalization) {
+            case Capitalization.alwaysAllcaps:
+              char = char?.toUpperCase();
+              break;
+            case Capitalization.alwaysSmall:
+              char = char?.toLowerCase();
+              break;
+            default:
+              break;
+          }
           if (char != null &&
               char.isNotEmpty &&
               RegExp(r'^[a-zA-Z0-9]$').hasMatch(char)) {
@@ -198,12 +222,11 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
               readOnly: true,
               showCursor: true,
               textAlign: TextAlign.center,
-              textAlignVertical: TextAlignVertical.top,
+              textAlignVertical: TextAlignVertical.center,
               enableSuggestions: false,
               style: widget.style?.textStyle,
               selectionControls: _EmptyTextSelectionControls(),
               decoration: InputDecoration(
-                prefixText: '',
                 filled: true,
                 fillColor: style.boxBackgroundColor,
                 focusColor: style.boxBackgroundColor,
@@ -213,14 +236,16 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
                     color: style.selectionColor ?? Colors.black,
                     width: (style.boxBorderWidth ?? 1.0) * 2,
                   ),
-                  borderRadius: BorderRadius.circular(style.boxCornerRadius ?? 0),
+                  borderRadius:
+                      BorderRadius.circular(style.boxCornerRadius ?? 0),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     color: style.boxBorderColor ?? Colors.black,
                     width: style.boxBorderWidth ?? 1.0,
                   ),
-                  borderRadius: BorderRadius.circular(style.boxCornerRadius ?? 0),
+                  borderRadius:
+                      BorderRadius.circular(style.boxCornerRadius ?? 0),
                 ),
               ),
               onTap: () {

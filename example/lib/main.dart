@@ -50,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: CodeEntryFieldStyle.Default.copyWith(
                 boxBackgroundColor: Colors.grey.withAlpha(50),
               ),
+              capitalization: Capitalization.alwaysAllcaps,
             ),
             const SizedBox(height: 20),
             Text(

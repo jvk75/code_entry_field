@@ -13,6 +13,8 @@ A Flutter widget for entering single characters at a time in a series of boxes.
 *   Supports only letters and numbers.
 *   Customizable number of character boxes.
 *   Callback for when the characters change.
+*   Customizable styling
+*   Control capitalization of letters
 
 ## Getting started
 
@@ -34,6 +36,7 @@ CodeEntryField(
   style: CodeEntryFieldStyle.Default.copyWith( 
     boxBackgroundColor: Colors.grey.withAlpha(50),
   ), // Optional, uses default styling if not set
+  capitalization: Capitalization.allwaysAllcaps, // Optional
 )
 ```
 
