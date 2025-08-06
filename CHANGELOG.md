@@ -1,3 +1,7 @@
+# 0.4.1
+
+* Fix clipping behaviour
+
 # 0.4.0
 
 * Added capitilisation control

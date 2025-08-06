@@ -46,9 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
               boxSize: Size(50, 50),
-              initialCharacters: ['1', '2', '3'],
+              initialCharacters: ['1', '2', 'W',],
               style: CodeEntryFieldStyle.Default.copyWith(
                 boxBackgroundColor: Colors.grey.withAlpha(50),
+                textStyle: TextStyle(fontSize: 28, color: Colors.black),
               ),
               capitalization: Capitalization.alwaysAllcaps,
             ),
