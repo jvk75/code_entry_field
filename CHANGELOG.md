@@ -1,3 +1,7 @@
+# 0.5.0
+
+* Fix ios keyboard event issue
+
 # 0.4.1
 
 * Fix clipping behaviour

@@ -93,6 +93,7 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
   late List<String> _characters;
 
   late CodeEntryFieldStyle style;
+  static const _zws = '\u200B';
 
   @override
   void initState() {
@@ -124,10 +125,22 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
 
         focusNode.addListener(() {
           if (focusNode.hasFocus) {
-            _controllers[index].selection = TextSelection(
-              baseOffset: 0,
-              extentOffset: _controllers[index].text.length,
-            );
+            if (_controllers[index].text.isEmpty) {
+              _controllers[index].text = _zws;
+              _controllers[index].selection = TextSelection(
+                baseOffset: 0,
+                extentOffset: _controllers[index].text.length,
+              );
+            } else {
+              _controllers[index].selection = TextSelection(
+                baseOffset: 0,
+                extentOffset: _controllers[index].text.length,
+              );
+            }
+          } else {
+            if (_controllers[index].text == _zws) {
+              _controllers[index].text = '';
+            }
           }
         });
 
@@ -138,43 +151,6 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
 
           if (event.logicalKey == LogicalKeyboardKey.tab ||
               event.logicalKey == LogicalKeyboardKey.enter) {
-            if (index < widget.characterCount - 1) {
-              _focusNodes[index + 1].requestFocus();
-            } else {
-              _focusNodes[0].requestFocus();
-            }
-            return KeyEventResult.handled;
-          }
-
-          if (event.logicalKey == LogicalKeyboardKey.backspace) {
-            if (_controllers[index].text.isNotEmpty) {
-              _controllers[index].clear();
-              _characters[index] = '';
-              widget.onChanged(_characters);
-            } else if (index > 0) {
-              _focusNodes[index - 1].requestFocus();
-            }
-            return KeyEventResult.handled;
-          }
-
-          String? char = event.character;
-          switch (widget.capitalization) {
-            case Capitalization.alwaysAllcaps:
-              char = char?.toUpperCase();
-              break;
-            case Capitalization.alwaysSmall:
-              char = char?.toLowerCase();
-              break;
-            default:
-              break;
-          }
-          if (char != null &&
-              char.isNotEmpty &&
-              RegExp(r'^[a-zA-Z0-9]$').hasMatch(char)) {
-            _controllers[index].text = char;
-            _characters[index] = char;
-            widget.onChanged(_characters);
-
             if (index < widget.characterCount - 1) {
               _focusNodes[index + 1].requestFocus();
             } else {
@@ -220,17 +196,16 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
             child: TextField(
               controller: _controllers[index],
               focusNode: _focusNodes[index],
-              readOnly: true,
-              showCursor: true,
+              readOnly: false,
+              showCursor: false,
               clipBehavior: Clip.none,
               textAlign: TextAlign.center,
               textAlignVertical: TextAlignVertical.top,
               enableSuggestions: false,
               style: widget.style?.textStyle,
               selectionControls: _EmptyTextSelectionControls(),
+              maxLength: 1,
               decoration: InputDecoration(
-                prefixText: '',
-                suffixText: '',
                 counterText: '',
                 filled: true,
                 fillColor: style.boxBackgroundColor,
@@ -253,6 +228,59 @@ class _CodeEntryFieldState extends State<CodeEntryField> {
                       BorderRadius.circular(style.boxCornerRadius ?? 0),
                 ),
               ),
+              onChanged: (value) {
+                if (value.isEmpty) {
+                  _characters[index] = '';
+                  widget.onChanged(_characters);
+                  if (index > 0) {
+                    _focusNodes[index - 1].requestFocus();
+                  }
+                  return;
+                }
+
+                final char = value.replaceFirst(_zws, '');
+
+                if (char.isEmpty) {
+                  return;
+                }
+
+                String finalChar = char.substring(char.length - 1);
+
+                switch (widget.capitalization) {
+                  case Capitalization.alwaysAllcaps:
+                    finalChar = finalChar.toUpperCase();
+                    break;
+                  case Capitalization.alwaysSmall:
+                    finalChar = finalChar.toLowerCase();
+                    break;
+                  default:
+                    break;
+                }
+
+                if (RegExp(r'^[a-zA-Z0-9]$').hasMatch(finalChar)) {
+                  _controllers[index].text = finalChar;
+                  _characters[index] = finalChar;
+                  widget.onChanged(_characters);
+
+                  if (index < widget.characterCount - 1) {
+                    _focusNodes[index + 1].requestFocus();
+                  } else {
+                    _focusNodes[0].requestFocus();
+                  }
+                } else {
+                  String revertText;
+                  if (_characters[index].isEmpty) {
+                    revertText = _zws;
+                  } else {
+                    revertText = _characters[index];
+                  }
+                  _controllers[index].text = revertText;
+                  _controllers[index].selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: revertText.length,
+                  );
+                }
+              },
               onTap: () {
                 _focusNodes[index].requestFocus();
               },
